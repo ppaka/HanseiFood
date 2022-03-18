@@ -1,31 +1,17 @@
 import requests
-from bs4 import BeautifulSoup
+import json
 import datetime
-import re
 
-now = str(datetime.datetime.now())
-day = now[:4] + now[5:7] + now[8:10]
+# now = str(datetime.datetime.now())
+now = str(datetime.datetime.today() + datetime.timedelta(days=1))
+year = now[:4]
+month = now[5:7]
+date = now[8:10]
 
-print(day)
+url = f'https://schoolmenukr.ml/api/high/B100000662?year={now[:4]}&month={now[5:7]}&date={now[8:10]}&allergy=hidden'
+response = requests.get(url)
+school_menu = json.loads(response.text)
+print(school_menu)
 
-req = requests.get("http://stu.sen.go.kr/sts_sci_md01_001.do?schulCode=B100000662&schulCrseScCode=4&schulKndScCode=04&schMmealScCode=2&schYmd=20201218")
-#print(req.text)
-soup = BeautifulSoup(req.text, "html.parser")
-#print(soup)
-element = soup.find_all("tr")
-#print(element[2])
-element = element[2].find_all('td')
-
-element = element[5]  # num
-element = str(element)
-element = element.replace('[', '')
-element = element.replace(']', '')
-element = element.replace('<br/>', '\n')
-element = element.replace('<td class="textC last">', '')
-element = element.replace('<td class="textC">', '')
-element = element.replace('</td>', '')
-element = element.replace('(h)', '')
-element = element.replace('.', '')
-element = re.sub(r"\d", "", element)
-
-print(element)
+for i in school_menu['menu'][0]['lunch']:
+    print(i)

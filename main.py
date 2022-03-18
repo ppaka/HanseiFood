@@ -1,17 +1,11 @@
-import asyncio
-import os
-from typing import NoReturn, Union
-from warnings import catch_warnings
-from discord import emoji, reaction
-from discord.embeds import Embed
-import requests
-from bs4 import BeautifulSoup
-import datetime
-import re
-import json
-
 import discord
 from discord.ext import commands
+import asyncio
+import os
+from typing import Union
+import requests
+import datetime
+import json
 
 client = commands.Bot(command_prefix='!')
 wait_for_reaction = dict()
@@ -143,9 +137,16 @@ async def on_reaction_add(reaction: discord.Reaction, user: Union[discord.Member
                     except json.decoder.JSONDecodeError as err:
                         print("올바른 Json 파일 형식이 아닙니다")
 
+                    schoolType = ''
+                    if '고등학교' in msg[2][0]:
+                        schoolType = 'high'
+                    elif '중학교' in msg[2][0]:
+                        schoolType = 'middle'
+                    elif '초등학교' in msg[2][0]:
+                        schoolType = 'elementary'
+
                     with open(os.getcwd()+'\\savedschools.json', 'w', encoding='utf-8') as file:
-                        json_data[str(reaction.message.guild.id)
-                                  ] = str(msg[2][2])
+                        json_data[str(reaction.message.guild.id)] = [str(msg[2][2]), schoolType]
                         json.dump(json_data, file, indent="\t")
                         file.close()
 
@@ -172,12 +173,12 @@ async def on_reaction_add(reaction: discord.Reaction, user: Union[discord.Member
                     await reaction.message.channel.send(embed=embed)
 
 
-def getSchoolCode(guildId):
+def getSchoolData(guildId):
     try:
         with open(os.getcwd()+'\\savedschools.json', 'r', encoding='utf-8') as file:
             json_data = json.load(file)
             file.close()
-            return str(json_data[str(guildId)])
+            return (str(json_data[str(guildId)][0]), str(json_data[str(guildId)][1]))
     except KeyError as err:
         print("설정되어지지 않은 서버")
         return None
@@ -191,12 +192,9 @@ def getSchoolCode(guildId):
 
 @client.command(name='급식오늘', pass_context=True)
 async def getInfo(ctx: commands.context.Context):
-    # now = str(datetime.datetime.now())
-    # day = now[:4] + now[5:7] + now[8:10]
+    schoolData = getSchoolData(ctx.guild.id)
 
-    schoolCode = getSchoolCode(ctx.guild.id)
-
-    if (schoolCode == None):
+    if (schoolData == None):
         embed = discord.Embed(
             title='에러...', description='학교 정보를 찾을 수 없어...', color=0xDC143C
         )
@@ -206,78 +204,45 @@ async def getInfo(ctx: commands.context.Context):
         await ctx.send(embed=embed)
         return
 
-    to_tomorrow = datetime.datetime.today() + datetime.timedelta(days=1)  # 오늘 날짜에 이틀을 더함
-    realTomorrow = datetime.datetime.today()
-    schYmd = realTomorrow.strftime("%Y.%m.%d")
+    nowDate = datetime.datetime.today()
+    nowStr = str(nowDate)  # 다음날
+    year = nowStr[:4]
+    month = nowStr[5:7]
+    date = nowStr[8:10]
+    num = nowDate.weekday()
 
-    #local_date2 = to_tomorrow.strftime("%Y.%m.%d")  # 위에서 구한 날짜를 년.월.일 형식으로 저장
-    local_weekday2 = to_tomorrow.weekday()  # 위에서  구한 날짜의 요일값을 저장
-    #schYmd = local_date2  # str
-    num = local_weekday2  # int 0월1화2수3목4금5토6일
-
-    # 현실 날짜 읽을때는 항상 1일 빼서 읽기
-
-    if num == 6:
+    if num == 5:
         embed = discord.Embed(
             title='에러...', description=' ', color=0xDC143C
         )
-        embed.add_field(name='토요일 급식 정보를 가져올 수 없습니다...',
+        embed.add_field(name=f'{date}일 급식 정보를 가져올 수 없습니다...',
                         value='토요일에 급식이 나와..?')
         embed.set_footer(text='paka#8285')
         await ctx.send(embed=embed)
         return
-    elif num == 0:
+    elif num == 6:
         embed = discord.Embed(
             title='에러...', description=' ', color=0xDC143C
         )
-        embed.add_field(name='일요일 급식 정보를 가져올 수 없습니다...',
+        embed.add_field(name=f'{date}일 급식 정보를 가져올 수 없습니다...',
                         value='일요일에 급식이 나와..?')
         embed.set_footer(text='paka#8285')
         await ctx.send(embed=embed)
         return
 
-    req = requests.get(
-        f"http://stu.sen.go.kr/sts_sci_md01_001.do?schulCode={schoolCode}&schulCrseScCode=4&schulKndScCode=04&schMmealScCode=2&schYmd={schYmd}")
-    soup = BeautifulSoup(req.text, "html.parser")
-    element = soup.find_all("tr")
-    element = element[2].find_all('td')
+    url = f'https://schoolmenukr.ml/api/{schoolData[1]}/{schoolData[0]}?year={year}&month={month}&date={date}&allergy=hidden'
+    response = requests.get(url)
+    school_menu = json.loads(response.text)
+    data = ''
+    for i in school_menu['menu'][0]['lunch']:
+        data = data + '\n' + i
+    
+    data = data.strip()
 
-    try:
-        element = element[num]
-    except IndexError:
+    if data == '':
         embed = discord.Embed(
             title='에러...', description='', color=0xFFA500)
-        embed.add_field(name='급식 데이터를 조회하지 못했습니다...',
-                        value='어째서..?', inline=False)
-        embed.set_footer(text='paka#8285')
-        await ctx.send(embed=embed)
-        return
-
-    element = str(element)
-    element = element.replace('[', '')
-    element = element.replace(']', '')
-    element = element.replace('<br/>', '\n')
-    element = element.replace('<td class="textC last">', '')
-    element = element.replace('<td class="textC">', '')
-    element = element.replace('</td>', '')
-    element = element.replace('(h)', '')
-    element = element.replace('.', '')
-    element = re.sub(r"\d", "", element)
-    element = element.replace('amp;', '')
-    element = element.replace('@', '')
-    data = element
-
-    if data == ' ':
-        embed = discord.Embed(
-            title='에러...', description='', color=0xFFA500)
-        embed.add_field(name='급식 데이터를 조회하지 못했습니다...',
-                        value='어째서..?', inline=False)
-        embed.set_footer(text='paka#8285')
-        await ctx.send(embed=embed)
-    elif data == '':
-        embed = discord.Embed(
-            title='에러...', description='', color=0xFFA500)
-        embed.add_field(name='급식 데이터를 조회하지 못했습니다...',
+        embed.add_field(name=f'{date}일 급식 데이터를 조회하지 못했습니다...',
                         value='어째서..?', inline=False)
         embed.set_footer(text='paka#8285')
         await ctx.send(embed=embed)
@@ -285,15 +250,15 @@ async def getInfo(ctx: commands.context.Context):
         embed = discord.Embed(
             title='급식 정보', description='오늘 급식이야!', color=0xF2CB61)
         embed.add_field(name='🍽', value=f'{data}', inline=False)
-        embed.set_footer(text='paka#8285')
+        embed.set_footer(text=f'{month}월 {date}일 / paka#8285')
         await ctx.send(embed=embed)
 
 
 @client.command(name='급식내일', pass_context=True)
 async def getInfoNextday(ctx: commands.context.Context):
-    schoolCode = getSchoolCode(ctx.guild.id)
+    schoolData = getSchoolData(ctx.guild.id)
 
-    if (schoolCode == None):
+    if (schoolData == None):
         embed = discord.Embed(
             title='에러...', description='학교 정보를 찾을 수 없어...', color=0xDC143C
         )
@@ -303,78 +268,45 @@ async def getInfoNextday(ctx: commands.context.Context):
         await ctx.send(embed=embed)
         return
 
-    to_tomorrow = datetime.datetime.today() + datetime.timedelta(days=2)  # 오늘 날짜에 이틀을 더함
-    realTomorrow = datetime.datetime.today() + datetime.timedelta(days=1)
-    schYmd = realTomorrow.strftime("%Y.%m.%d")
+    nowDate = datetime.datetime.today() + datetime.timedelta(days=1)
+    nowStr = str(nowDate)  # 다음날
+    year = nowStr[:4]
+    month = nowStr[5:7]
+    date = nowStr[8:10]
+    num = nowDate.weekday()
 
-    #local_date2 = to_tomorrow.strftime("%Y.%m.%d")  # 위에서 구한 날짜를 년.월.일 형식으로 저장
-    local_weekday2 = to_tomorrow.weekday()  # 위에서  구한 날짜의 요일값을 저장
-    #schYmd = local_date2  # str
-    num = local_weekday2  # int 0월1화2수3목4금5토6일
-
-    # 현실 날짜 읽을때는 항상 1일 빼서 읽기
-
-    if num == 6:
+    if num == 5:
         embed = discord.Embed(
             title='에러...', description=' ', color=0xDC143C
         )
-        embed.add_field(name='토요일 급식 정보를 가져올 수 없습니다...',
+        embed.add_field(name=f'{date}일 급식 정보를 가져올 수 없습니다...',
                         value='토요일에 급식이 나와..?')
         embed.set_footer(text='paka#8285')
         await ctx.send(embed=embed)
         return
-    elif num == 0:
+    elif num == 6:
         embed = discord.Embed(
             title='에러...', description=' ', color=0xDC143C
         )
-        embed.add_field(name='일요일 급식 정보를 가져올 수 없습니다...',
+        embed.add_field(name=f'{date}일 급식 정보를 가져올 수 없습니다...',
                         value='일요일에 급식이 나와..?')
         embed.set_footer(text='paka#8285')
         await ctx.send(embed=embed)
         return
 
-    req = requests.get(
-        f"http://stu.sen.go.kr/sts_sci_md01_001.do?schulCode={schoolCode}&schulCrseScCode=4&schulKndScCode=04&schMmealScCode=2&schYmd={schYmd}")
-    soup = BeautifulSoup(req.text, "html.parser")
-    element = soup.find_all("tr")
-    element = element[2].find_all('td')
+    url = f'https://schoolmenukr.ml/api/{schoolData[1]}/{schoolData[0]}?year={year}&month={month}&date={date}&allergy=hidden'
+    response = requests.get(url)
+    school_menu = json.loads(response.text)
+    data = ''
+    for i in school_menu['menu'][0]['lunch']:
+        data = data + '\n' + i
+    
+    data = data.strip()
 
-    try:
-        element = element[num]
-    except IndexError:
+    if data == '':
         embed = discord.Embed(
             title='에러...', description='', color=0xFFA500)
-        embed.add_field(name='급식 데이터를 조회하지 못했습니다...',
-                        value='어째서..?', inline=False)
-        embed.set_footer(text='paka#8285')
-        await ctx.send(embed=embed)
-        return
-
-    element = str(element)
-    element = element.replace('[', '')
-    element = element.replace(']', '')
-    element = element.replace('<br/>', '\n')
-    element = element.replace('<td class="textC last">', '')
-    element = element.replace('<td class="textC">', '')
-    element = element.replace('</td>', '')
-    element = element.replace('(h)', '')
-    element = element.replace('.', '')
-    element = re.sub(r"\d", "", element)
-    element = element.replace('amp;', '')
-    element = element.replace('@', '')
-    data = element
-
-    if data == ' ':
-        embed = discord.Embed(
-            title='에러...', description='', color=0xFFA500)
-        embed.add_field(name='급식 데이터를 조회하지 못했습니다...',
-                        value='어째서..?', inline=False)
-        embed.set_footer(text='paka#8285')
-        await ctx.send(embed=embed)
-    elif data == '':
-        embed = discord.Embed(
-            title='에러...', description='', color=0xFFA500)
-        embed.add_field(name='급식 데이터를 조회하지 못했습니다...',
+        embed.add_field(name=f'{date}일 급식 데이터를 조회하지 못했습니다...',
                         value='어째서..?', inline=False)
         embed.set_footer(text='paka#8285')
         await ctx.send(embed=embed)
@@ -382,9 +314,9 @@ async def getInfoNextday(ctx: commands.context.Context):
         embed = discord.Embed(
             title='급식 정보', description='내일 급식이야!', color=0xFAEBD7)
         embed.add_field(name='🍽', value=f'{data}', inline=False)
-        embed.set_footer(text='paka#8285')
+        embed.set_footer(text=f'{month}월 {date}일 / paka#8285')
         await ctx.send(embed=embed)
 
 
-# client.run("ODIzMzQ2MzM2MTkwNjkzNDA3.YFffBw.9_simUyqJPuBJ2DcAMyNjrMO5KU") #real
-client.run("NzM1MTA2NjA1NDM1MDYwMjI1.XxbbYA.qpDbsDm-8vxI5Gy7bvKGrfDg7Ac")  # test
+client.run("ODIzMzQ2MzM2MTkwNjkzNDA3.YFffBw.9_simUyqJPuBJ2DcAMyNjrMO5KU") # real
+# client.run("NzM1MTA2NjA1NDM1MDYwMjI1.XxbbYA.qpDbsDm-8vxI5Gy7bvKGrfDg7Ac")  # test
