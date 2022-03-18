@@ -6,9 +6,12 @@ from typing import Union
 import requests
 import datetime
 import json
+import os
 
 client = commands.Bot(command_prefix='!')
 wait_for_reaction = dict()
+dir = os.path.dirname(os.path.abspath(__file__))
+dir = dir.replace('\\', '/')+'/'
 
 
 @client.event
@@ -129,7 +132,7 @@ async def on_reaction_add(reaction: discord.Reaction, user: Union[discord.Member
                     await reaction.message.delete()
                     json_data = dict()
                     try:
-                        with open(os.getcwd()+'\\savedschools.json', 'r', encoding='utf-8') as file:
+                        with open(dir+'savedschools.json', 'r', encoding='utf-8') as file:
                             json_data = json.load(file)
                             file.close()
                     except FileNotFoundError as err:
@@ -145,7 +148,7 @@ async def on_reaction_add(reaction: discord.Reaction, user: Union[discord.Member
                     elif '초등학교' in msg[2][0]:
                         schoolType = 'elementary'
 
-                    with open(os.getcwd()+'\\savedschools.json', 'w', encoding='utf-8') as file:
+                    with open(dir+'savedschools.json', 'w', encoding='utf-8') as file:
                         json_data[str(reaction.message.guild.id)] = [str(msg[2][2]), schoolType]
                         json.dump(json_data, file, indent="\t")
                         file.close()
@@ -175,6 +178,7 @@ async def on_reaction_add(reaction: discord.Reaction, user: Union[discord.Member
 
 def getSchoolData(guildId):
     try:
+        sav_dir = dir.replace('\\', '/')+'/'
         with open(os.getcwd()+'\\savedschools.json', 'r', encoding='utf-8') as file:
             json_data = json.load(file)
             file.close()
