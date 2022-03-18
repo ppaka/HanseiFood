@@ -11,8 +11,7 @@ import os
 client = commands.Bot(command_prefix='!')
 wait_for_reaction = dict()
 dir = os.path.dirname(os.path.abspath(__file__))
-dir = dir.replace('\\', '/')
-print(os.getcwd())
+dir = dir.replace('\\', '/') + '/' + 'savedschools.json'
 print(dir)
 
 
