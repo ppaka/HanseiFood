@@ -11,7 +11,9 @@ import os
 client = commands.Bot(command_prefix='!')
 wait_for_reaction = dict()
 dir = os.path.dirname(os.path.abspath(__file__))
-dir = dir.replace('\\', '/')+'/'
+dir = dir.replace('\\', '/')
+print(os.getcwd())
+print(dir)
 
 
 @client.event
