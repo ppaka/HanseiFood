@@ -132,7 +132,7 @@ async def on_reaction_add(reaction: discord.Reaction, user: Union[discord.Member
                     await reaction.message.delete()
                     json_data = dict()
                     try:
-                        with open(path+'savedschools.json', 'r', encoding='utf-8') as file:
+                        with open(path, 'r', encoding='utf-8') as file:
                             json_data = json.load(file)
                             file.close()
                     except FileNotFoundError as err:
