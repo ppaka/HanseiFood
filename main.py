@@ -27,14 +27,14 @@ def getSchoolInfo(school):
     try:
         response = requests.get(url)
         school_infos = json.loads(response.text)
-        return (school_infos["school_infos"][0]["name"], school_infos["school_infos"][0]["address"], school_infos["school_infos"][0]["code"])
+        return school_infos
     except:
         return False
 
 
 class Register:
     ctx: commands.context.Context = None
-    cache: str = None
+    cache = None
 
     async def register(self, ctx, cache):
         self.ctx = ctx
@@ -72,12 +72,19 @@ class Register:
 
 
 @client.command(name='급식학교설정', pass_context=True)
-async def setSchool(ctx: commands.context.Context, school: str):
+async def setSchool(ctx: commands.context.Context, *, school: str):
+    args = school.split(' ')
+    if(len(args) == 1):
+        print('학교이름들어옴 : ' + args[0])
+    else:
+        print('학교이름하고 : ' + args[0])
+        print('다른거 : ' + args[1])
+
     if not ctx.author.guild_permissions.administrator:
         embed = discord.Embed(
             title='에러...', description=' ', color=0xFF0000
         )
-        embed.add_field(name='오직 관리자 권한을 가진 유저만 이 명령어를 사용할 수 있습니다...',
+        embed.add_field(name='오직 관리자 권한을 가진 유저만 이 명령어를 사용할 수 있습니다',
                         value='관리자에게 부탁해 보세요..?')
         embed.set_footer(text='paka#8285')
         await ctx.send(embed=embed)
@@ -87,8 +94,8 @@ async def setSchool(ctx: commands.context.Context, school: str):
         embed = discord.Embed(
             title='에러...', description=' ', color=0xFF0000
         )
-        embed.add_field(name='이미 서버에서 진행중인 작업이 있습니다...',
-                        value='작업이 끝날때까지 기다려주세요')
+        embed.add_field(name='이미 서버에서 진행중인 작업이 있습니다',
+                        value='작업이 끝날때까지 기다려주세요...')
         embed.set_footer(text='paka#8285')
         await ctx.send(embed=embed)
         return
@@ -98,7 +105,7 @@ async def setSchool(ctx: commands.context.Context, school: str):
         embed = discord.Embed(
             title='에러...', description=' ', color=0xFF0000
         )
-        embed.add_field(name='정보를 가져오는데 문제가 발생했습니다...', value='정확한 이름을 입력해주세요')
+        embed.add_field(name='정보를 가져오는데 문제가 발생했습니다', value='정확한 이름을 입력해주세요...')
         embed.set_footer(text='paka#8285')
         await ctx.send(embed=embed)
     else:
@@ -108,11 +115,12 @@ async def setSchool(ctx: commands.context.Context, school: str):
 @setSchool.error
 async def setSchool_error(ctx: commands.context.Context, error: commands.CommandError):
     if isinstance(error, commands.MissingRequiredArgument):
+        print('명령어 사용 오류')
         embed = discord.Embed(
             title='명령어 사용 에러...', description=' ', color=0xDC143C
         )
-        embed.add_field(
-            name='사용법', value='!급식학교설정 "학교이름"')
+        embed.add_field(name='사용법', value='!급식학교설정 [학교이름]')
+        embed.add_field(name='아니면...', value='!급식학교설정 [학교이름] [교육청]')
         embed.set_footer(text='paka#8285')
         await ctx.send(embed=embed)
 
