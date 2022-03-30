@@ -14,7 +14,7 @@ base_path = os.path.dirname(os.path.abspath(__file__))
 path = base_path.replace('\\', '/') + '/' + 'savedschools.json'
 
 f = open(base_path.replace('\\', '/') + '/' + 'key', 'r', encoding='utf-8')
-key = f.read()
+key = f.read().strip()
 f.close()
 
 

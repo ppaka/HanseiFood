@@ -3,6 +3,7 @@ import json
 
 f = open('key', 'r', encoding='utf-8')
 key = f.read()
+key = key.strip()
 f.close()
 
 schoolName = '선유중학교'

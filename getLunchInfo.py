@@ -4,6 +4,7 @@ import datetime
 
 f = open('key', 'r', encoding='utf-8')
 key = f.read()
+key = key.strip()
 f.close()
 
 # now = str(datetime.datetime.now())
