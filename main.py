@@ -28,14 +28,18 @@ async def on_ready():
 
 def getSchoolInfo(school_name):
     url = f'https://open.neis.go.kr/hub/schoolInfo?KEY={key}&Type=json&SCHUL_NM={school_name}'
-    try:
-        response = requests.get(url)
-        data = json.loads(response.text)
-        print(data['schoolInfo'][0]['head'][1]['RESULT']['CODE'])
-        if data['schoolInfo'][0]['head'][1]['RESULT']['CODE'] == 'INFO-000':
-            return data
-    except:
-        return False
+    response = requests.get(url)
+    data = json.loads(response.text)
+    print(data['schoolInfo'][0]['head'][1]['RESULT']['CODE'])
+    if data['schoolInfo'][0]['head'][1]['RESULT']['CODE'] == 'INFO-000':
+        return data
+    # try:
+    #     response = requests.get(url)
+    #     data = json.loads(response.text)
+    #     if data['schoolInfo'][0]['head'][1]['RESULT']['CODE'] == 'INFO-000':
+    #         return data
+    # except:
+    #     return False
 
 
 def getSchoolData(guildId):
