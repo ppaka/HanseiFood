@@ -10,10 +10,10 @@ import os
 
 client = commands.Bot(command_prefix='!')
 wait_for_reaction = dict()
-path = os.path.dirname(os.path.abspath(__file__))
-path = path.replace('\\', '/') + '/' + 'savedschools.json'
+base_path = os.path.dirname(os.path.abspath(__file__))
+path = base_path.replace('\\', '/') + '/' + 'savedschools.json'
 
-f = open('key', 'r', encoding='utf-8')
+f = open(base_path.replace('\\', '/') + '/' + 'key', 'r', encoding='utf-8')
 key = f.read()
 f.close()
 
