@@ -13,6 +13,10 @@ wait_for_reaction = dict()
 path = os.path.dirname(os.path.abspath(__file__))
 path = path.replace('\\', '/') + '/' + 'savedschools.json'
 
+f = open('key', 'r', encoding='utf-8')
+key = f.read()
+f.close()
+
 
 @client.event
 async def on_ready():
@@ -22,14 +26,32 @@ async def on_ready():
     await client.change_presence(activity=discord.Game(name='!급식오늘 또는... !급식내일'))
 
 
-def getSchoolInfo(school):
-    url = f'https://schoolmenukr.ml/code/api?q={school}'
+def getSchoolInfo(school_name):
+    url = f'https://open.neis.go.kr/hub/schoolInfo?KEY={key}&Type=json&SCHUL_NM={school_name}'
     try:
         response = requests.get(url)
-        school_infos = json.loads(response.text)
-        return school_infos
+        data = json.loads(response.text)
+        if data['schoolInfo'][0]['head'][1]['RESULT']['CODE'] == 'INFO-000':
+            return data
     except:
         return False
+
+
+def getSchoolData(guildId):
+    try:
+        with open(path, 'r', encoding='utf-8') as file:
+            json_data = json.load(file)
+            file.close()
+            return (str(json_data[str(guildId)][0]), str(json_data[str(guildId)][1]))
+    except KeyError as err:
+        print('설정되어지지 않은 서버')
+        return None
+    except FileNotFoundError as err:
+        print('파일이 존재하지 않습니다')
+        return None
+    except json.decoder.JSONDecodeError as err:
+        print('올바른 Json 파일 형식이 아닙니다')
+        return None
 
 
 class Register:
@@ -40,19 +62,40 @@ class Register:
         self.ctx = ctx
         self.cache = cache
 
+        count = len(cache['schoolInfo'][1]['row'])
+        data = []
+
+        for i in cache['schoolInfo'][1]['row']:
+            print('----------')
+            print('교육청 코드: ' + i['ATPT_OFCDC_SC_CODE'])
+            print('교육청 이름: ' + i['ATPT_OFCDC_SC_NM'])
+            print('학교 코드: ' + i['SD_SCHUL_CODE'])
+            print('학교 이름: ' + i['SCHUL_NM'])
+            print('학교 주소: ' + i['ORG_RDNMA'])
+            print('----------')
+            data.append((i['ATPT_OFCDC_SC_CODE'], i['ATPT_OFCDC_SC_NM'],
+                        i['SD_SCHUL_CODE'], i['SCHUL_NM'], i['ORG_RDNMA']))
+
         embed = discord.Embed(
             title='학교 설정', description='정말 이 학교가 맞아?', color=0xFF7F50
         )
-        embed.add_field(name='학교 이름', value=cache[0])
-        embed.add_field(name='학교 위치', value=cache[1])
-        embed.add_field(name='학교 코드', value=cache[2])
+
+        embed.add_field(name='학교 이름', value=data[0][3])
+        embed.add_field(name='학교 위치', value=data[0][4])
+        embed.add_field(name='학교 코드', value=data[0][2])
+        embed.add_field(name='시도교육청 이름', value=data[0][1])
+        embed.add_field(name='시도교육청 코드', value=data[0][0])
         embed.set_footer(text='반응을 눌러 결정해주세요  /  paka#8285')
         msg = await ctx.send(embed=embed)
 
-        wait_for_reaction[ctx.guild.id] = (
-            ctx.author.id, msg.id, (cache[0], cache[1], cache[2]))
-        await msg.add_reaction("⭕")
-        await msg.add_reaction("❌")
+        wait_for_reaction[ctx.guild.id] = (ctx.author.id, msg.id, data)
+        if count > 1:
+            await msg.add_reaction('⭕')
+            await msg.add_reaction('❌')
+            await msg.add_reaction('➡️')
+        else:
+            await msg.add_reaction('⭕')
+            await msg.add_reaction('❌')
 
         sec = 10
         while sec != 0:
@@ -72,14 +115,7 @@ class Register:
 
 
 @client.command(name='급식학교설정', pass_context=True)
-async def setSchool(ctx: commands.context.Context, *, school: str):
-    args = school.split(' ')
-    if(len(args) == 1):
-        print('학교이름들어옴 : ' + args[0])
-    else:
-        print('학교이름하고 : ' + args[0])
-        print('다른거 : ' + args[1])
-
+async def setSchool(ctx: commands.context.Context, school: str):
     if not ctx.author.guild_permissions.administrator:
         embed = discord.Embed(
             title='에러...', description=' ', color=0xFF0000
@@ -99,7 +135,9 @@ async def setSchool(ctx: commands.context.Context, *, school: str):
         embed.set_footer(text='paka#8285')
         await ctx.send(embed=embed)
         return
+
     cache = getSchoolInfo(school)
+    print(cache)
 
     if cache == False:
         embed = discord.Embed(
@@ -135,7 +173,7 @@ async def on_reaction_add(reaction: discord.Reaction, user: Union[discord.Member
     else:
         if user.id == msg[0]:
             if reaction.message.id == msg[1]:
-                if reaction.emoji == "⭕":
+                if reaction.emoji == '⭕':
                     wait_for_reaction.pop(reaction.message.guild.id)
                     await reaction.message.delete()
                     json_data = dict()
@@ -144,25 +182,18 @@ async def on_reaction_add(reaction: discord.Reaction, user: Union[discord.Member
                             json_data = json.load(file)
                             file.close()
                     except FileNotFoundError as err:
-                        print("파일이 존재하지 않습니다")
+                        print('파일이 존재하지 않습니다')
                     except json.decoder.JSONDecodeError as err:
-                        print("올바른 Json 파일 형식이 아닙니다")
-
-                    schoolType = ''
-                    if '고등학교' in msg[2][0]:
-                        schoolType = 'high'
-                    elif '중학교' in msg[2][0]:
-                        schoolType = 'middle'
-                    elif '초등학교' in msg[2][0]:
-                        schoolType = 'elementary'
+                        print('올바른 Json 파일 형식이 아닙니다')
 
                     with open(path, 'w', encoding='utf-8') as file:
-                        json_data[str(reaction.message.guild.id)] = [str(msg[2][2]), schoolType]
-                        json.dump(json_data, file, indent="\t")
+                        json_data[str(reaction.message.guild.id)] = [
+                            msg[2][0][0], msg[2][0][2]]
+                        json.dump(json_data, file, indent='\t')
                         file.close()
 
                     print(str(reaction.message.guild.id) +
-                          " / " + "학교 설정: "+str(msg[2][2]))
+                          ' / ' + '학교 설정: ' + msg[2][0][0] + ' | '+msg[2][0][2])
 
                     embed = discord.Embed(
                         title='성공!', description=' ', color=0x7FFF00
@@ -171,7 +202,7 @@ async def on_reaction_add(reaction: discord.Reaction, user: Union[discord.Member
                                     value='『!급식오늘』 을 입력해보아요!')
                     embed.set_footer(text='paka#8285')
                     await reaction.message.channel.send(embed=embed)
-                elif reaction.emoji == "❌":
+                elif reaction.emoji == '❌':
                     wait_for_reaction.pop(reaction.message.guild.id)
                     await reaction.message.delete()
 
@@ -182,23 +213,6 @@ async def on_reaction_add(reaction: discord.Reaction, user: Union[discord.Member
                                     value='이걸 취소하네?!')
                     embed.set_footer(text='paka#8285')
                     await reaction.message.channel.send(embed=embed)
-
-
-def getSchoolData(guildId):
-    try:
-        with open(path, 'r', encoding='utf-8') as file:
-            json_data = json.load(file)
-            file.close()
-            return (str(json_data[str(guildId)][0]), str(json_data[str(guildId)][1]))
-    except KeyError as err:
-        print("설정되어지지 않은 서버")
-        return None
-    except FileNotFoundError as err:
-        print("파일이 존재하지 않습니다")
-        return None
-    except json.decoder.JSONDecodeError as err:
-        print("올바른 Json 파일 형식이 아닙니다")
-        return None
 
 
 @client.command(name='급식오늘', pass_context=True)
@@ -220,6 +234,7 @@ async def getInfo(ctx: commands.context.Context):
     year = nowStr[:4]
     month = nowStr[5:7]
     date = nowStr[8:10]
+    ymd = year+month+date
     num = nowDate.weekday()
 
     if num == 5:
@@ -241,13 +256,15 @@ async def getInfo(ctx: commands.context.Context):
         await ctx.send(embed=embed)
         return
 
-    url = f'https://schoolmenukr.ml/api/{schoolData[1]}/{schoolData[0]}?year={year}&month={month}&date={date}&allergy=hidden'
+    url = f'https://open.neis.go.kr/hub/mealServiceDietInfo?KEY={key}&Type=json&ATPT_OFCDC_SC_CODE={schoolData[0]}&SD_SCHUL_CODE={schoolData[1]}&MLSV_YMD={ymd}'
     response = requests.get(url)
     school_menu = json.loads(response.text)
+    splited_data = school_menu['mealServiceDietInfo'][1]['row'][0]['DDISH_NM'].split(
+        '<br/>')
     data = ''
-    for i in school_menu['menu'][0]['lunch']:
+    for i in splited_data:
         data = data + '\n' + i
-    
+
     data = data.strip()
 
     if data == '':
@@ -284,6 +301,7 @@ async def getInfoNextday(ctx: commands.context.Context):
     year = nowStr[:4]
     month = nowStr[5:7]
     date = nowStr[8:10]
+    ymd = year+month+date
     num = nowDate.weekday()
 
     if num == 5:
@@ -305,13 +323,15 @@ async def getInfoNextday(ctx: commands.context.Context):
         await ctx.send(embed=embed)
         return
 
-    url = f'https://schoolmenukr.ml/api/{schoolData[1]}/{schoolData[0]}?year={year}&month={month}&date={date}&allergy=hidden'
+    url = f'https://open.neis.go.kr/hub/mealServiceDietInfo?KEY={key}&Type=json&ATPT_OFCDC_SC_CODE={schoolData[0]}&SD_SCHUL_CODE={schoolData[1]}&MLSV_YMD={ymd}'
     response = requests.get(url)
     school_menu = json.loads(response.text)
+    splited_data = school_menu['mealServiceDietInfo'][1]['row'][0]['DDISH_NM'].split(
+        '<br/>')
     data = ''
-    for i in school_menu['menu'][0]['lunch']:
+    for i in splited_data:
         data = data + '\n' + i
-    
+
     data = data.strip()
 
     if data == '':
@@ -329,5 +349,5 @@ async def getInfoNextday(ctx: commands.context.Context):
         await ctx.send(embed=embed)
 
 
-client.run("ODIzMzQ2MzM2MTkwNjkzNDA3.YFffBw.9_simUyqJPuBJ2DcAMyNjrMO5KU") # real
-# client.run("NzM1MTA2NjA1NDM1MDYwMjI1.XxbbYA.qpDbsDm-8vxI5Gy7bvKGrfDg7Ac")  # test
+client.run('ODIzMzQ2MzM2MTkwNjkzNDA3.YFffBw.9_simUyqJPuBJ2DcAMyNjrMO5KU')  # real
+# client.run('NzM1MTA2NjA1NDM1MDYwMjI1.XxbbYA.qpDbsDm-8vxI5Gy7bvKGrfDg7Ac')  # test
