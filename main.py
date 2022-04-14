@@ -8,8 +8,10 @@ import datetime
 import json
 import os
 
-client = commands.Bot(command_prefix='!')
+client = commands.Bot(command_prefix='')
 wait_for_reaction = dict()
+wating_data = dict()
+cooltimes = dict()
 base_path = os.path.dirname(os.path.abspath(__file__))
 path = base_path.replace('\\', '/') + '/' + 'savedschools.json'
 
@@ -23,7 +25,7 @@ async def on_ready():
     print(f'다음으로 로그인 합니다\n{client.user.name}')
     print(client.user.id)
     print('--------')
-    await client.change_presence(activity=discord.Game(name='!급식오늘 또는... !급식내일'))
+    await client.change_presence(activity=discord.Game(name='오늘급식 | 내일급식'))
 
 
 def getSchoolInfo(school_name):
@@ -76,6 +78,8 @@ class Register:
             data.append((i['ATPT_OFCDC_SC_CODE'], i['ATPT_OFCDC_SC_NM'],
                         i['SD_SCHUL_CODE'], i['SCHUL_NM'], i['ORG_RDNMA']))
 
+        wating_data[ctx.guild.id] = [0, count, data]
+
         embed = discord.Embed(
             title='학교 설정', description='정말 이 학교가 맞아?', color=0xFF7F50
         )
@@ -97,14 +101,18 @@ class Register:
             await msg.add_reaction('⭕')
             await msg.add_reaction('❌')
 
-        sec = 10
-        while sec != 0:
-            sec = sec - 1
+        cooltimes[ctx.guild.id] = 10
+        while cooltimes[ctx.guild.id] != 0:
+            if not cooltimes.get(ctx.guild.id):
+                return
+            cooltimes[ctx.guild.id] = cooltimes[ctx.guild.id] - 1
             if not wait_for_reaction.get(ctx.guild.id):
                 return
             await asyncio.sleep(1)
 
         wait_for_reaction.pop(ctx.guild.id)
+        cooltimes.pop(ctx.guild.id)
+        wating_data.pop(ctx.guild.id)
         await msg.delete()
         embed = discord.Embed(
             title='작업 취소', description=' ', color=0xB22222
@@ -137,7 +145,7 @@ async def setSchool(ctx: commands.context.Context, school: str):
         return
 
     cache = getSchoolInfo(school)
-    print(cache)
+    # print(cache)
 
     if cache == False:
         embed = discord.Embed(
@@ -157,8 +165,7 @@ async def setSchool_error(ctx: commands.context.Context, error: commands.Command
         embed = discord.Embed(
             title='명령어 사용 에러...', description=' ', color=0xDC143C
         )
-        embed.add_field(name='사용법', value='!급식학교설정 [학교이름]')
-        embed.add_field(name='아니면...', value='!급식학교설정 [학교이름] [교육청]')
+        embed.add_field(name='사용법', value='급식학교설정 [학교이름]')
         embed.set_footer(text='paka#8285')
         await ctx.send(embed=embed)
 
@@ -175,6 +182,7 @@ async def on_reaction_add(reaction: discord.Reaction, user: Union[discord.Member
             if reaction.message.id == msg[1]:
                 if reaction.emoji == '⭕':
                     wait_for_reaction.pop(reaction.message.guild.id)
+                    cooltimes.pop(reaction.message.guild.id)
                     await reaction.message.delete()
                     json_data = dict()
                     try:
@@ -188,22 +196,25 @@ async def on_reaction_add(reaction: discord.Reaction, user: Union[discord.Member
 
                     with open(path, 'w', encoding='utf-8') as file:
                         json_data[str(reaction.message.guild.id)] = [
-                            msg[2][0][0], msg[2][0][2]]
+                            msg[2][(wating_data[reaction.message.guild.id][0])][0], msg[2][(wating_data[reaction.message.guild.id][0])][2]]
                         json.dump(json_data, file, indent='\t')
                         file.close()
 
                     print(str(reaction.message.guild.id) +
-                          ' / ' + '학교 설정: ' + msg[2][0][0] + ' | '+msg[2][0][2])
+                          ' / ' + '학교 설정: ' + msg[2][(wating_data[reaction.message.guild.id][0])][0] + ' | '+msg[2][(wating_data[reaction.message.guild.id][0])][2])
 
+                    wating_data.pop(reaction.message.guild.id)
                     embed = discord.Embed(
                         title='성공!', description=' ', color=0x7FFF00
                     )
                     embed.add_field(name='서버의 학교 정보가 설정되었습니다!',
-                                    value='『!급식오늘』 을 입력해보아요!')
+                                    value='『오늘급식』 을 입력해보아요!')
                     embed.set_footer(text='paka#8285')
                     await reaction.message.channel.send(embed=embed)
                 elif reaction.emoji == '❌':
                     wait_for_reaction.pop(reaction.message.guild.id)
+                    cooltimes.pop(reaction.message.guild.id)
+                    wating_data.pop(reaction.message.guild.id)
                     await reaction.message.delete()
 
                     embed = discord.Embed(
@@ -213,9 +224,29 @@ async def on_reaction_add(reaction: discord.Reaction, user: Union[discord.Member
                                     value='이걸 취소하네?!')
                     embed.set_footer(text='paka#8285')
                     await reaction.message.channel.send(embed=embed)
+                elif reaction.emoji == '➡️':
+                    cooltimes[reaction.message.guild.id] = 10
+                    wating_data[reaction.message.guild.id][0] = (wating_data[
+                        reaction.message.guild.id][0]+1) % wating_data[reaction.message.guild.id][1]
+                    print('카운트 갱신: ', wating_data[reaction.message.guild.id][0])
+                    embed = discord.Embed(
+                        title='학교 설정', description='정말 이 학교가 맞아?', color=0xFF7F50
+                    )
+                    embed.add_field(
+                        name='학교 이름', value=wating_data[reaction.message.guild.id][2][wating_data[reaction.message.guild.id][0]][3])
+                    embed.add_field(
+                        name='학교 위치', value=wating_data[reaction.message.guild.id][2][wating_data[reaction.message.guild.id][0]][4])
+                    embed.add_field(
+                        name='학교 코드', value=wating_data[reaction.message.guild.id][2][wating_data[reaction.message.guild.id][0]][2])
+                    embed.add_field(
+                        name='시도교육청 이름', value=wating_data[reaction.message.guild.id][2][wating_data[reaction.message.guild.id][0]][1])
+                    embed.add_field(
+                        name='시도교육청 코드', value=wating_data[reaction.message.guild.id][2][wating_data[reaction.message.guild.id][0]][0])
+                    embed.set_footer(text='반응을 눌러 결정해주세요  /  paka#8285')
+                    msg = await reaction.message.edit(embed=embed)
 
 
-@client.command(name='급식오늘', pass_context=True)
+@client.command(name='오늘급식', pass_context=True)
 async def getInfo(ctx: commands.context.Context):
     schoolData = getSchoolData(ctx.guild.id)
 
@@ -224,7 +255,7 @@ async def getInfo(ctx: commands.context.Context):
             title='에러...', description='학교 정보를 찾을 수 없어...', color=0xDC143C
         )
         embed.add_field(
-            name='사용하시기 전에...', value='『!급식학교설정』 명령어로 설정해주세요!')
+            name='사용하시기 전에...', value='『급식학교설정』 명령어로 설정해주세요!')
         embed.set_footer(text='paka#8285')
         await ctx.send(embed=embed)
         return
@@ -282,7 +313,7 @@ async def getInfo(ctx: commands.context.Context):
         await ctx.send(embed=embed)
 
 
-@client.command(name='급식내일', pass_context=True)
+@client.command(name='내일급식', pass_context=True)
 async def getInfoNextday(ctx: commands.context.Context):
     schoolData = getSchoolData(ctx.guild.id)
 
@@ -291,7 +322,7 @@ async def getInfoNextday(ctx: commands.context.Context):
             title='에러...', description='학교 정보를 찾을 수 없어...', color=0xDC143C
         )
         embed.add_field(
-            name='사용하시기 전에...', value='『!급식학교설정』 명령어로 설정해주세요!')
+            name='사용하시기 전에...', value='『급식학교설정』 명령어로 설정해주세요!')
         embed.set_footer(text='paka#8285')
         await ctx.send(embed=embed)
         return
