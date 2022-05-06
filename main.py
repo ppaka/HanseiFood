@@ -290,6 +290,16 @@ async def getInfo(ctx: commands.context.Context):
     url = f'https://open.neis.go.kr/hub/mealServiceDietInfo?KEY={key}&Type=json&ATPT_OFCDC_SC_CODE={schoolData[0]}&SD_SCHUL_CODE={schoolData[1]}&MLSV_YMD={ymd}'
     response = requests.get(url)
     school_menu = json.loads(response.text)
+
+    if school_menu.get('mealServiceDietInfo') == None:
+        embed = discord.Embed(
+            title='에러...', description='', color=0xFFA500)
+        embed.add_field(name=f'{date}일 급식 데이터를 조회하는 도중 오류가 발생했습니다.',
+                        value='데이터를 불러오지 못했나봐요...', inline=False)
+        embed.set_footer(text='paka#8285')
+        await ctx.send(embed=embed)
+        return
+
     splited_data = school_menu['mealServiceDietInfo'][1]['row'][0]['DDISH_NM'].split(
         '<br/>')
     data = ''
