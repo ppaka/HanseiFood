@@ -8,7 +8,7 @@ import datetime
 import json
 import os
 
-client = commands.Bot(command_prefix='')
+client = commands.Bot(command_prefix='', help_command=None)
 wait_for_reaction = dict()
 wating_data = dict()
 cooltimes = dict()
