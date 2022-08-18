@@ -400,5 +400,83 @@ async def getInfoNextday(ctx: commands.context.Context):
         await ctx.send(embed=embed)
 
 
+@client.command(name='내일모레급식', pass_context=True)
+async def getInfoNextNextday(ctx: commands.context.Context):
+    schoolData = getSchoolData(ctx.guild.id)
+
+    if (schoolData == None):
+        embed = discord.Embed(
+            title='에러...', description='학교 정보를 찾을 수 없어...', color=0xDC143C
+        )
+        embed.add_field(
+            name='사용하시기 전에...', value='『급식학교설정』 명령어로 설정해주세요!')
+        embed.set_footer(text='paka#8285')
+        await ctx.send(embed=embed)
+        return
+
+    nowDate = datetime.datetime.today() + datetime.timedelta(days=2)
+    nowStr = str(nowDate)  # 다음날
+    year = nowStr[:4]
+    month = nowStr[5:7]
+    date = nowStr[8:10]
+    ymd = year+month+date
+    num = nowDate.weekday()
+
+    if num == 5:
+        embed = discord.Embed(
+            title='에러...', description=' ', color=0xDC143C
+        )
+        embed.add_field(name=f'{date}일 급식 정보를 가져올 수 없습니다...',
+                        value='토요일에 급식이 나와..?')
+        embed.set_footer(text='paka#8285')
+        await ctx.send(embed=embed)
+        return
+    elif num == 6:
+        embed = discord.Embed(
+            title='에러...', description=' ', color=0xDC143C
+        )
+        embed.add_field(name=f'{date}일 급식 정보를 가져올 수 없습니다...',
+                        value='일요일에 급식이 나와..?')
+        embed.set_footer(text='paka#8285')
+        await ctx.send(embed=embed)
+        return
+
+    url = f'https://open.neis.go.kr/hub/mealServiceDietInfo?KEY={key}&Type=json&ATPT_OFCDC_SC_CODE={schoolData[0]}&SD_SCHUL_CODE={schoolData[1]}&MLSV_YMD={ymd}'
+    response = requests.get(url)
+    school_menu = json.loads(response.text)
+
+    if school_menu.get('mealServiceDietInfo') == None:
+        embed = discord.Embed(
+            title='에러...', description='', color=0xFFA500)
+        embed.add_field(name=f'{date}일 급식 데이터를 조회하는 도중 오류가 발생했습니다.',
+                        value='데이터를 불러오지 못했나봐요...', inline=False)
+        embed.set_footer(text='paka#8285')
+        await ctx.send(embed=embed)
+        return
+
+    splited_data = school_menu['mealServiceDietInfo'][1]['row'][0]['DDISH_NM'].split(
+        '<br/>')
+    data = ''
+    for i in splited_data:
+        data = data + '\n' + i
+
+    data = data.strip()
+
+    if data == '':
+        embed = discord.Embed(
+            title='에러...', description='', color=0xFFA500)
+        embed.add_field(name=f'{date}일 급식 데이터를 조회하지 못했습니다...',
+                        value='어째서..?', inline=False)
+        embed.set_footer(text='paka#8285')
+        await ctx.send(embed=embed)
+    else:
+        embed = discord.Embed(
+            title='급식 정보', description='내일 모레 급식이야!', color=0xFAEBD7)
+        embed.add_field(name='🍽', value=f'{data}', inline=False)
+        embed.set_footer(text=f'{month}월 {date}일 / paka#8285')
+        await ctx.send(embed=embed)
+
+
+
 client.run('ODIzMzQ2MzM2MTkwNjkzNDA3.YFffBw.9_simUyqJPuBJ2DcAMyNjrMO5KU')  # real
 # client.run('NzM1MTA2NjA1NDM1MDYwMjI1.XxbbYA.qpDbsDm-8vxI5Gy7bvKGrfDg7Ac')  # test
