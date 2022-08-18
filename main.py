@@ -568,7 +568,7 @@ async def getInfoNextNextNextday(ctx: commands.context.Context):
         await ctx.send(embed=embed)
         return
 
-    nowDate = datetime.datetime.today() + datetime.timedelta(days=3)
+    nowDate = datetime.datetime.today() + datetime.timedelta(days=4)
     nowStr = str(nowDate)  # 다음날
     year = nowStr[:4]
     month = nowStr[5:7]
