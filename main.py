@@ -555,7 +555,7 @@ async def getInfoNextNextNextday(ctx: commands.context.Context):
 
 
 @client.command(name='내일모레모레모레급식', pass_context=True)
-async def getInfoNextNextday(ctx: commands.context.Context):
+async def getInfoNextNextNextday(ctx: commands.context.Context):
     schoolData = getSchoolData(ctx.guild.id)
 
     if (schoolData == None):
