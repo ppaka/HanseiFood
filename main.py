@@ -353,6 +353,11 @@ async def getInfoNextNextNextNextNextday(ctx: commands.context.Context):
     await findFoodData(ctx, 6, '내일 모레 모레 모레 모레 모레')
 
 
+@client.command(name='내일모레모레모레모레모레모레급식', pass_context=True)
+async def getInfoNextNextNextNextNextday(ctx: commands.context.Context):
+    await findFoodData(ctx, 7, '내일 모레 모레 모레 모레 모레 모레')
+
+
 async def findFoodData(ctx: commands.context.Context, dayAddAmount, msg):
     schoolData = getSchoolData(ctx.guild.id)
 
