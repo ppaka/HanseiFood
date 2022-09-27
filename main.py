@@ -323,9 +323,19 @@ async def getInfo(ctx: commands.context.Context):
         await ctx.send(embed=embed)
 
 
+@client.command(name='오급', pass_context=True)
+async def getInfoShort(ctx: commands.context.Context):
+    await getInfo(ctx)
+
+
 @client.command(name='내일급식', pass_context=True)
 async def getInfoNextday(ctx: commands.context.Context):
     await findFoodData(ctx, 1, '내일')
+
+
+@client.command(name='내급', pass_context=True)
+async def getInfoNextdayShort(ctx: commands.context.Context):
+    await getInfoNextday(ctx)
 
 
 @client.command(name='내일모레급식', pass_context=True)
