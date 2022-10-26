@@ -43,8 +43,8 @@ class MyBot(commands.Bot):
         await bot.tree.sync()
 
     async def on_command_error(self, context: commands.context.Context, exception, /) -> None:
-        if '내모모모모모모모급' in context.message.content:
-            print('명령어 오류')
+        # if '내모모모모모모모급' in context.message.content:
+        #     print('명령어 오류')
         if type(exception) != commands.errors.CommandNotFound:
             return await super().on_command_error(context, exception)
 
@@ -53,18 +53,18 @@ class MyBot(commands.Bot):
         print(self.user.name)
         print(self.user.id)
         print('===============')
-        game = Game('급식실 앞에 줄서기')
+        game = Game('급식실 앞에서 손소독')
         await self.change_presence(status=Status.online, activity=game)
 
 async def findFoodData(ctx: commands.context.Context, dayAddAmount, msg):
     schoolData = getSchoolData(path, ctx.guild.id)
 
-    if (schoolData == None):
+    if schoolData == None:
         embed = discord.Embed(
             title='에러...', description='학교 정보를 찾을 수 없어...', color=0xDC143C
         )
         embed.add_field(
-            name='사용하시기 전에...', value='『급식학교설정』 명령어로 설정해주세요!')
+            name='사용하시기 전에...', value='『/급식학교설정』 명령어로 설정해주세요!')
         embed.set_footer(text='paka#8285')
         await ctx.send(embed=embed)
         return
