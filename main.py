@@ -1,5 +1,8 @@
 import discord
 from discord.ext import commands
+from discord.ui import Button, View
+from discord import ButtonStyle
+
 import asyncio
 import os
 from typing import Union
@@ -62,7 +65,7 @@ class Register:
     ctx: commands.context.Context = None
     cache = None
 
-    async def register(self, ctx, cache):
+    async def register(self, ctx: commands.context.Context, cache):
         self.ctx = ctx
         self.cache = cache
 
@@ -95,14 +98,6 @@ class Register:
         msg = await ctx.send(embed=embed)
 
         wait_for_reaction[ctx.guild.id] = (ctx.author.id, msg.id, data)
-        if count > 1:
-            await msg.add_reaction('⭕')
-            await msg.add_reaction('❌')
-            await msg.add_reaction('➡️')
-        else:
-            await msg.add_reaction('⭕')
-            await msg.add_reaction('❌')
-
         cooltimes[ctx.guild.id] = 10
         while cooltimes[ctx.guild.id] != 0:
             if not cooltimes.get(ctx.guild.id):
@@ -147,7 +142,6 @@ async def setSchool(ctx: commands.context.Context, school: str):
         return
 
     cache = getSchoolInfo(school)
-    # print(cache)
 
     if cache == False:
         embed = discord.Embed(
@@ -198,12 +192,14 @@ async def on_reaction_add(reaction: discord.Reaction, user: Union[discord.Member
 
                     with open(path, 'w', encoding='utf-8') as file:
                         json_data[str(reaction.message.guild.id)] = [
-                            msg[2][(wating_data[reaction.message.guild.id][0])][0], msg[2][(wating_data[reaction.message.guild.id][0])][2]]
+                            msg[2][(wating_data[reaction.message.guild.id][0])][0], 
+                            msg[2][(wating_data[reaction.message.guild.id][0])][2]]
                         json.dump(json_data, file, indent='\t')
                         file.close()
 
                     print(str(reaction.message.guild.id) +
-                          ' / ' + '학교 설정: ' + msg[2][(wating_data[reaction.message.guild.id][0])][0] + ' | '+msg[2][(wating_data[reaction.message.guild.id][0])][2])
+                          ' / ' + '학교 설정: ' + msg[2][(wating_data[reaction.message.guild.id][0])][0] 
+                          + ' | '+msg[2][(wating_data[reaction.message.guild.id][0])][2])
 
                     wating_data.pop(reaction.message.guild.id)
                     embed = discord.Embed(
