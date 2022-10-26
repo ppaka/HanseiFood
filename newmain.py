@@ -14,6 +14,7 @@ from schoolDataUtility import *
 dotenv.load_dotenv()
 NIES_KEY = os.getenv('NIES_KEY')
 APP_ID = os.getenv('APPLICATION_ID')
+TEST_APP_ID = os.getenv('TEST_APPLICATION_ID')
 DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')
 TEST_DISCORD_TOKEN = os.getenv('TEST_DISCORD_TOKEN')
 
@@ -173,4 +174,4 @@ async def getInfoNextNextday(ctx: commands.context.Context):
 async def getInfoNextNextday(ctx: commands.context.Context):
     await findFoodData(ctx, 7, '내일 모레 모레 모레 모레 모레 모레')
 
-bot.run(token=TEST_DISCORD_TOKEN)
+bot.run(token=DISCORD_TOKEN)
