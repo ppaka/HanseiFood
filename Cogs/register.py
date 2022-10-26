@@ -155,6 +155,27 @@ class register(commands.Cog):
     @app_commands.describe(sch_name='학교이름')
     async def request_get(self, interaction: Interaction, sch_name: str) -> None:
         await interaction.response.defer(ephemeral=False)
+
+        if not interaction.user.guild_permissions.administrator:
+            embed = discord.Embed(
+                title='에러...', description=' ', color=0xFF0000
+            )
+            embed.add_field(name='오직 관리자 권한을 가진 유저만 이 명령어를 사용할 수 있습니다',
+                            value='관리자에게 부탁해 보세요..?')
+            embed.set_footer(text='paka#8285')
+            await interaction.edit_original_response(embed=embed)
+            return
+
+        if wait_for_reaction.get(interaction.guild_id):
+            embed = discord.Embed(
+                title='에러...', description=' ', color=0xFF0000
+            )
+            embed.add_field(name='이미 서버에서 진행중인 작업이 있습니다',
+                            value='작업이 끝날때까지 기다려주세요...')
+            embed.set_footer(text='paka#8285')
+            await interaction.edit_original_response(embed=embed)
+            return
+
         school_info = getSchoolInfo(NIES_KEY, sch_name)
 
         if school_info == False:
