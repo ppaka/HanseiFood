@@ -21,9 +21,6 @@ TEST_DISCORD_TOKEN = os.getenv('TEST_DISCORD_TOKEN')
 intents = Intents.default()
 intents.message_content = True
 
-base_path = os.path.dirname(os.path.abspath(__file__))
-path = base_path.replace('\\', '/') + '/' + 'savedschools.json'
-
 
 class MyBot(commands.Bot):
     def __init__(self):
@@ -34,7 +31,8 @@ class MyBot(commands.Bot):
             application_id=APP_ID
         )
         self.initial_extension = [
-            'Cogs.register'
+            'Cogs.register',
+            'Cogs.getLunchData'
         ]
 
     async def setup_hook(self):
@@ -56,8 +54,9 @@ class MyBot(commands.Bot):
         game = Game('급식실 앞에서 손소독')
         await self.change_presence(status=Status.online, activity=game)
 
+
 async def findFoodData(ctx: commands.context.Context, dayAddAmount, msg):
-    schoolData = getSchoolData(path, ctx.guild.id)
+    schoolData = getSchoolData(ctx.guild.id)
 
     if schoolData == None:
         embed = discord.Embed(
@@ -81,21 +80,16 @@ async def findFoodData(ctx: commands.context.Context, dayAddAmount, msg):
     ymd = year+month+date
     num = nowDate.weekday()
 
-    if num == 5:
+    if num == 5 or num == 6:
         embed = discord.Embed(
             title='에러...', description=' ', color=0xDC143C
         )
+
+        dayString = '토'
+        if num == 6:
+            dayString = '일'
         embed.add_field(name=f'{date}일 급식 정보를 가져올 수 없습니다...',
-                        value='토요일에 급식이 나와..?')
-        embed.set_footer(text='paka#8285')
-        await ctx.send(embed=embed)
-        return
-    elif num == 6:
-        embed = discord.Embed(
-            title='에러...', description=' ', color=0xDC143C
-        )
-        embed.add_field(name=f'{date}일 급식 정보를 가져올 수 없습니다...',
-                        value='일요일에 급식이 나와..?')
+                        value=f'{dayString}요일에 급식이 나와..?')
         embed.set_footer(text='paka#8285')
         await ctx.send(embed=embed)
         return
@@ -142,33 +136,41 @@ async def findFoodData(ctx: commands.context.Context, dayAddAmount, msg):
 
 bot = MyBot()
 
+
 @bot.command(name='오늘급식', pass_context=True, aliases=['오급'])
 async def getInfo(ctx: commands.context.Context):
     await findFoodData(ctx, 0, '오늘')
+
 
 @bot.command(name='내일급식', pass_context=True, aliases=['내급'])
 async def getInfoNextday(ctx: commands.context.Context):
     await findFoodData(ctx, 1, '내일')
 
+
 @bot.command(name='내일모레급식', pass_context=True, aliases=['내모급'])
 async def getInfoNextNextday(ctx: commands.context.Context):
     await findFoodData(ctx, 2, '내일 모레')
+
 
 @bot.command(name='내일모레모레급식', pass_context=True, aliases=['내모모급'])
 async def getInfoNextNextday(ctx: commands.context.Context):
     await findFoodData(ctx, 3, '내일 모레 모레')
 
+
 @bot.command(name='내일모레모레모레급식', pass_context=True, aliases=['내모모모급'])
 async def getInfoNextNextday(ctx: commands.context.Context):
     await findFoodData(ctx, 4, '내일 모레 모레 모레')
+
 
 @bot.command(name='내일모레모레모레모레급식', pass_context=True, aliases=['내모모모모급'])
 async def getInfoNextNextday(ctx: commands.context.Context):
     await findFoodData(ctx, 5, '내일 모레 모레 모레 모레')
 
+
 @bot.command(name='내일모레모레모레모레모레급식', pass_context=True, aliases=['내모모모모모급'])
 async def getInfoNextNextday(ctx: commands.context.Context):
     await findFoodData(ctx, 6, '내일 모레 모레 모레 모레 모레')
+
 
 @bot.command(name='내일모레모레모레모레모레모레급식', pass_context=True, aliases=['내모모모모모모급'])
 async def getInfoNextNextday(ctx: commands.context.Context):

@@ -1,7 +1,17 @@
 import requests
 import json
+import dotenv
+import os
 
-def getSchoolData(path, guildId):
+from getSavedSchoolJsonPath import getSavedSchoolJsonPath
+
+dotenv.load_dotenv()
+NIES_KEY = os.getenv('NIES_KEY')
+
+
+def getSchoolData(guildId):
+    path = getSavedSchoolJsonPath()
+
     try:
         with open(path, 'r', encoding='utf-8') as file:
             json_data = json.load(file)
@@ -16,6 +26,7 @@ def getSchoolData(path, guildId):
     except json.decoder.JSONDecodeError as err:
         print('올바른 Json 파일 형식이 아닙니다')
         return None
+
 
 def getSchoolInfo(nies_key, school_name):
     url = f'https://open.neis.go.kr/hub/schoolInfo?KEY={nies_key}&Type=json&SCHUL_NM={school_name}'
