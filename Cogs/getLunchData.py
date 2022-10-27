@@ -31,7 +31,7 @@ class getLunchData(commands.Cog):
             embed.add_field(
                 name='사용하시기 전에...', value='『/급식학교설정』 명령어로 설정해주세요!')
             embed.set_footer(text='paka#8285')
-            await interaction.response.edit_message(embed=embed)
+            await interaction.edit_original_response(embed=embed)
             return
 
         ymd = str(yyyymmdd)
@@ -45,7 +45,7 @@ class getLunchData(commands.Cog):
             embed.add_field(name=f'{ymd} 급식 데이터를 조회하는 도중 오류가 발생했습니다.',
                             value='데이터를 불러오지 못했나봐요...', inline=False)
             embed.set_footer(text='paka#8285')
-            await interaction.response.edit_message(embed=embed)
+            await interaction.edit_original_response(embed=embed)
             return
 
         splited_data = school_menu['mealServiceDietInfo'][1]['row'][0]['DDISH_NM'].split(
@@ -62,13 +62,13 @@ class getLunchData(commands.Cog):
             embed.add_field(name=f'{ymd} 급식 데이터를 조회하지 못했습니다...',
                             value='어째서..?', inline=False)
             embed.set_footer(text='paka#8285')
-            await interaction.response.edit_message(embed=embed)
+            await interaction.edit_original_response(embed=embed)
         else:
             embed = discord.Embed(
                 title='급식 정보', description=f'급식이야!', color=0xFAEBD7)
             embed.add_field(name='🍽', value=f'{data}', inline=False)
             embed.set_footer(text=f'ymd: {ymd} / paka#8285')
-            await interaction.response.edit_message(embed=embed)
+            await interaction.edit_original_response(embed=embed)
 
 
 async def setup(bot: commands.Bot) -> None:
