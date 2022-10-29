@@ -136,6 +136,10 @@ async def findFoodData(ctx: commands.context.Context, dayAddAmount, msg):
 
 bot = MyBot()
 
+@bot.command(name='어제급식', pass_context=True, aliases=['어급'])
+async def getInfoLastday(ctx: commands.context.Context):
+    await findFoodData(ctx, -1, '어제')
+
 
 @bot.command(name='오늘급식', pass_context=True, aliases=['오급'])
 async def getInfo(ctx: commands.context.Context):
