@@ -67,7 +67,7 @@ class getLunchData(commands.Cog):
             embed = discord.Embed(
                 title='급식 정보', description=f'급식이야!', color=0xFAEBD7)
             embed.add_field(name='🍽', value=f'{data}', inline=False)
-            embed.set_footer(text=f'ymd: {ymd} / paka#8285')
+            embed.set_footer(text=f'YMD:{ymd} / paka#8285')
             await interaction.edit_original_response(embed=embed)
 
 
