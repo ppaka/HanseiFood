@@ -63,7 +63,7 @@ async def findFoodData(ctx: commands.context.Context, dayAddAmount, msg):
             title='에러...', description='학교 정보를 찾을 수 없어...', color=0xDC143C
         )
         embed.add_field(
-            name='사용하시기 전에...', value='『/급식학교설정』 명령어로 설정해주세요!')
+            name='사용하시기 전에...', value='『/학교설정』 명령어로 설정해주세요!')
         embed.set_footer(text='paka#8285')
         await ctx.send(embed=embed)
         return
