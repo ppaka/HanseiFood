@@ -17,12 +17,12 @@ jobs:
           fetch-depth: 0
 
       - name: Login
-        run: docker login ghcr.io -u ggos3 --password-stdin ${{ secrets.PASSWORD }}
+        run: \
+          token = ${{ secrets.PASSWORD }}
+          echo $token | docker login ghcr.io -u ggos3 password-stdin
 
       - name: build
         run: docker build .
 
       - name: push
         run: docker push ghrc.io/ggos3/test:latest
-        
-        
