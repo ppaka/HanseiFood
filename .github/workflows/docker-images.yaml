@@ -18,7 +18,7 @@ jobs:
 
       - name: Login
         run: \
-          token = ${{ secrets.PASSWORD }}
+          token = ${{ secrets.PASSWORD }} \
           echo $token | docker login ghcr.io -u ggos3 password-stdin
 
       - name: build
