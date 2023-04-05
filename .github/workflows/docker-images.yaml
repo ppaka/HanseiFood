@@ -24,4 +24,3 @@ jobs:
 
       - name: push
         run: docker push ghrc.io/ggos3/test:latest
-
