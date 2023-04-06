@@ -43,11 +43,7 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
-
-      - name: Pull Docker Image
-        run: |
-          docker pull ${{ secrets.DOCKERHUB_USERNAME }}/hanseifood:latest
-
-      - name: Run Docker Image
-        run: |
-          docker run -e DISCORD_TOKEN=${{ secrets.DISCORD_TOKEN }} -e TEST_DISCORD_TOKEN=${{ secrets.TEST_DISCORD_TOKEN}} -e NIES_KEY=${{ secrets.NIES_KEY }} -e TEST_APPLICATION_ID=${{ secrets.TEST_APPLICATION_ID }} -t hanseifood ${{ secrets.DOCKERHUB_USERNAME }}/hanseifood:latest
+          script: |
+            apt update & apt upgrade -y
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/hanseifood:latest
+            docker run -e DISCORD_TOKEN=${{ secrets.DISCORD_TOKEN }} -e TEST_DISCORD_TOKEN=${{ secrets.TEST_DISCORD_TOKEN}} -e NIES_KEY=${{ secrets.NIES_KEY }} -e TEST_APPLICATION_ID=${{ secrets.TEST_APPLICATION_ID }} -t hanseifood ${{ secrets.DOCKERHUB_USERNAME }}/hanseifood:latest
