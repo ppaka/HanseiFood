@@ -46,6 +46,8 @@ jobs:
           script: |
             sudo apt update & sudo apt upgrade -y
             
+            rm -f /home/ubuntu/HanseiFood/savedschools.json
+            docker cp hanseifood:/DockerHanseiFood/savedshools.json /home/ubuntu/HanseiFood
             docker stop hanseifood
             docker rm hanseifood
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/hanseifood:latest
