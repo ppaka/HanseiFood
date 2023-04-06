@@ -46,10 +46,10 @@ jobs:
           script: |
             sudo apt update & sudo apt upgrade -y
             
-            rm -f /home/ubuntu/HanseiFood/savedschools.json
-            docker cp hanseifood:/DockerHanseiFood/savedshools.json /home/ubuntu/HanseiFood
+            rm -f ~/HanseiFood/savedschools.json
+            docker cp hanseifood:/DockerHanseiFood/savedschools.json ~/HanseiFood
             docker stop hanseifood
             docker rm hanseifood
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/hanseifood:latest
             docker run -d -e DISCORD_TOKEN=${{ secrets.DISCORD_TOKEN }} -e TEST_DISCORD_TOKEN=${{ secrets.TEST_DISCORD_TOKEN}} -e NIES_KEY=${{ secrets.NIES_KEY }} -e TEST_APPLICATION_ID=${{ secrets.TEST_APPLICATION_ID }} --name hanseifood ${{ secrets.DOCKERHUB_USERNAME }}/hanseifood:latest
-            docker cp /home/ubuntu/HanseiFood/savedschools.json hanseifood:/DockerHanseiFood/
+            docker cp ~/HanseiFood/savedschools.json hanseifood:/DockerHanseiFood/
