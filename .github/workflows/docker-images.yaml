@@ -29,4 +29,4 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/test:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/hanseifood:latest
