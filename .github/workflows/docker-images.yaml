@@ -30,3 +30,29 @@ jobs:
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/hanseifood:latest
+
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: executing remote ssh commands using password
+        uses: appleboy/ssh-action@v0.1.9
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+
+      - name: Pull Docker Image
+        run: |
+          docker pull ${{ secrets.DOCKERHUB_USERNAME }}/hanseifood:latest
+
+      - name: Run Docker Image
+        run: |
+          docker run 
+          -e DISCORD_TOKEN=${{ secrets.DISCORD_TOKEN }}
+          -e TEST_DISCORD_TOKEN=${{ secrets.TEST_DISCORD_TOKEN}}
+          -e NIES_KEY=${{ secrets.NIES_KEY }}
+          -e TEST_APPLICATION_ID=${{ secrets.TEST_APPLICATION_ID }} 
+          -t hanseifood ${{ secrets.DOCKERHUB_USERNAME }}/hanseifood:latest
