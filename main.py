@@ -12,10 +12,10 @@ import requests
 from schoolDataUtility import *
 
 dotenv.load_dotenv()
-NIES_KEY = os.environ('NIES_KEY')
+NIES_KEY = os.environ['NIES_KEY']
 APP_ID = '823346336190693407'
 TEST_APP_ID = os.getenv('TEST_APPLICATION_ID')
-DISCORD_TOKEN = os.environ('DISCORD_TOKEN')
+DISCORD_TOKEN = os.environ['DISCORD_TOKEN']
 TEST_DISCORD_TOKEN = os.getenv('TEST_DISCORD_TOKEN')
 
 intents = Intents.default()
