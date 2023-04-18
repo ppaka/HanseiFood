@@ -109,7 +109,7 @@ async def findFoodData(ctx: commands.context.Context, dayAddAmount, msg):
         '<br/>')
     data = ''
     for i in splited_data:
-        data = data + '\n' + i
+        data = data + '\n' + i.strip()
 
     data = data.strip()
 
