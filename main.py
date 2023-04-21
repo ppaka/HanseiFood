@@ -3,6 +3,7 @@ import json
 import os
 import discord
 import dotenv
+import random
 from discord import *
 from discord import Intents
 from discord.ext import commands
@@ -58,7 +59,7 @@ async def findFoodData(ctx: commands.context.Context, dayAddAmount, msg):
 
     if schoolData == None:
         embed = discord.Embed(
-            title='에러...', description='학교 정보를 찾을 수 없어...', color=0xDC143C
+            title='오류 발생!', description='학교 정보를 찾을 수 없어...', color=0xDC143C
         )
         embed.add_field(
             name='사용하시기 전에...', value='『/학교설정』 명령어로 설정해주세요!')
@@ -80,13 +81,18 @@ async def findFoodData(ctx: commands.context.Context, dayAddAmount, msg):
 
     if num == 5 or num == 6:
         embed = discord.Embed(
-            title='에러...', description=' ', color=0xDC143C
+            title='오류 발생!', description=' ', color=0xDC143C
         )
 
         dayString = '토'
         if num == 6:
             dayString = '일'
-        embed.add_field(name=f'{date}일 급식 정보를 가져올 수 없습니다...',
+
+        if random.randrange(0, 2) == 1:
+            embed.add_field(name=f'{date}일 급식 정보를 가져오지 못했다구!',
+                        value=f'설마 {dayString}요일에 급식이 나온다고 생각하는거야? 허~접❤️')
+        else:
+            embed.add_field(name=f'{date}일 급식 정보를 가져올 수 없습니다...',
                         value=f'{dayString}요일에 급식이 나와..?')
         embed.set_footer(text='paka#8285')
         await ctx.send(embed=embed)
@@ -98,7 +104,7 @@ async def findFoodData(ctx: commands.context.Context, dayAddAmount, msg):
 
     if school_menu.get('mealServiceDietInfo') == None:
         embed = discord.Embed(
-            title='에러...', description='', color=0xFFA500)
+            title='오류 발생!', description='', color=0xFFA500)
         embed.add_field(name=f'{date}일 급식 데이터를 조회하는 도중 오류가 발생했습니다.',
                         value='데이터를 불러오지 못했나봐요...', inline=False)
         embed.set_footer(text='paka#8285')
@@ -115,7 +121,7 @@ async def findFoodData(ctx: commands.context.Context, dayAddAmount, msg):
 
     if data == '':
         embed = discord.Embed(
-            title='에러...', description='', color=0xFFA500)
+            title='오류 발생!', description='', color=0xFFA500)
         embed.add_field(name=f'{date}일 급식 데이터를 조회하지 못했습니다...',
                         value='어째서..?', inline=False)
         embed.set_footer(text='paka#8285')
