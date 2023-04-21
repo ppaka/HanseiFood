@@ -90,7 +90,7 @@ async def findFoodData(ctx: commands.context.Context, dayAddAmount, msg):
 
         if random.randrange(0, 2) == 1:
             embed.add_field(name=f'{date}일 급식 정보를 가져오지 못했다구!',
-                        value=f'설마 {dayString}요일에 급식이 나온다고 생각하는거야? 허~접❤️')
+                        value=f'설마 {dayString}요일에 급식이 나온다고 생각하는거야? 허~접')
         else:
             embed.add_field(name=f'{date}일 급식 정보를 가져올 수 없습니다...',
                         value=f'{dayString}요일에 급식이 나와..?')
