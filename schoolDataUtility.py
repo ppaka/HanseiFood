@@ -5,8 +5,7 @@ import os
 
 from getSavedSchoolJsonPath import getSavedSchoolJsonPath
 
-dotenv.load_dotenv()
-NIES_KEY = os.getenv('NIES_KEY')
+NEIS_KEY = os.getenv('NEIS_KEY')
 
 
 def getSchoolData(guildId):

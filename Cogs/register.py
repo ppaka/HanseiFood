@@ -2,14 +2,12 @@ import asyncio
 from discord import app_commands, Interaction
 from discord.ext import commands
 import discord
-import dotenv
 import os
 import json
 from getSavedSchoolJsonPath import getSavedSchoolJsonPath
 from schoolDataUtility import getSchoolInfo
 
-dotenv.load_dotenv()
-NIES_KEY = os.getenv('NIES_KEY')
+NEIS_KEY = os.getenv('NEIS_KEY')
 wait_for_reaction = dict()
 wating_data = dict()
 cooltimes = dict()
@@ -178,7 +176,7 @@ class register(commands.Cog):
             await interaction.edit_original_response(embed=embed)
             return
 
-        school_info = getSchoolInfo(NIES_KEY, sch_name)
+        school_info = getSchoolInfo(NEIS_KEY, sch_name)
 
         if school_info == False:
             embed = discord.Embed(

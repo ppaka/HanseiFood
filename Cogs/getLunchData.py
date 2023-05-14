@@ -3,14 +3,12 @@ from discord import app_commands, Interaction
 import discord
 from discord.ext import commands
 import requests
-import dotenv
 import os
 
 from schoolDataUtility import getSchoolData
 
 
-dotenv.load_dotenv()
-NIES_KEY = os.getenv('NIES_KEY')
+NEIS_KEY = os.getenv('NEIS_KEY')
 
 
 class getLunchData(commands.Cog):
@@ -35,7 +33,7 @@ class getLunchData(commands.Cog):
             return
 
         ymd = str(yyyymmdd)
-        url = f'https://open.neis.go.kr/hub/mealServiceDietInfo?KEY={NIES_KEY}&Type=json&ATPT_OFCDC_SC_CODE={schoolData[0]}&SD_SCHUL_CODE={schoolData[1]}&MLSV_YMD={ymd}'
+        url = f'https://open.neis.go.kr/hub/mealServiceDietInfo?KEY={NEIS_KEY}&Type=json&ATPT_OFCDC_SC_CODE={schoolData[0]}&SD_SCHUL_CODE={schoolData[1]}&MLSV_YMD={ymd}'
         response = requests.get(url)
         school_menu = json.loads(response.text)
 

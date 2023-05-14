@@ -2,7 +2,6 @@ import datetime
 import json
 import os
 import discord
-import dotenv
 import random
 from discord import *
 from discord import Intents
@@ -12,8 +11,7 @@ from discord import Status
 import requests
 from schoolDataUtility import *
 
-dotenv.load_dotenv()
-NIES_KEY = os.environ['NIES_KEY']
+NEIS_KEY = os.environ['NEIS_KEY']
 APP_ID = '823346336190693407'
 DISCORD_TOKEN = os.environ['DISCORD_TOKEN']
 
@@ -98,7 +96,7 @@ async def findFoodData(ctx: commands.context.Context, dayAddAmount, msg):
         await ctx.send(embed=embed)
         return
 
-    url = f'https://open.neis.go.kr/hub/mealServiceDietInfo?KEY={NIES_KEY}&Type=json&ATPT_OFCDC_SC_CODE={schoolData[0]}&SD_SCHUL_CODE={schoolData[1]}&MLSV_YMD={ymd}'
+    url = f'https://open.neis.go.kr/hub/mealServiceDietInfo?KEY={NEIS_KEY}&Type=json&ATPT_OFCDC_SC_CODE={schoolData[0]}&SD_SCHUL_CODE={schoolData[1]}&MLSV_YMD={ymd}'
     response = requests.get(url)
     school_menu = json.loads(response.text)
 
