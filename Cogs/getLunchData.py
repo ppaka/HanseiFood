@@ -8,7 +8,7 @@ import os
 from schoolDataUtility import getSchoolData
 
 
-NEIS_KEY = os.getenv('NEIS_KEY')
+NEIS_KEY = os.environ['NEIS_KEY']
 
 
 class getLunchData(commands.Cog):

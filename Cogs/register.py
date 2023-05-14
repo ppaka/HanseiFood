@@ -7,7 +7,7 @@ import json
 from getSavedSchoolJsonPath import getSavedSchoolJsonPath
 from schoolDataUtility import getSchoolInfo
 
-NEIS_KEY = os.getenv('NEIS_KEY')
+NEIS_KEY = os.environ['NEIS_KEY']
 wait_for_reaction = dict()
 wating_data = dict()
 cooltimes = dict()
