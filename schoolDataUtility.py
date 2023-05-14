@@ -1,11 +1,10 @@
 import requests
 import json
-import dotenv
 import os
 
 from getSavedSchoolJsonPath import getSavedSchoolJsonPath
 
-NEIS_KEY = os.getenv('NEIS_KEY')
+NEIS_KEY = os.environ['NEIS_KEY']
 
 
 def getSchoolData(guildId):
