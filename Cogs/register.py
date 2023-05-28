@@ -62,8 +62,8 @@ class Confirm(discord.ui.View):
         embed = discord.Embed(
             title='작업 취소', description=' ', color=0xDC143C
         )
-        embed.add_field(name='학교 설정 작업을 취소했습니다...',
-                        value='이걸 취소하네?!')
+        embed.add_field(name='학교 설정 작업을 취소했습니다.',
+                        value='취소! 취소!')
         embed.set_footer(text='paka#8285')
         await interaction.edit_original_response(embed=embed, view=None)
 
@@ -117,8 +117,8 @@ class ConfirmNext(discord.ui.View):
         embed = discord.Embed(
             title='작업 취소', description=' ', color=0xDC143C
         )
-        embed.add_field(name='학교 설정 작업을 취소했습니다...',
-                        value='이걸 취소하네?!')
+        embed.add_field(name='학교 설정 작업을 취소했습니다.',
+                        value='취소! 취소!')
         embed.set_footer(text='paka#8285')
         await interaction.edit_original_response(embed=embed, view=None)
 
@@ -160,8 +160,8 @@ class register(commands.Cog):
             embed = discord.Embed(
                 title='에러...', description=' ', color=0xFF0000
             )
-            embed.add_field(name='오직 관리자 권한을 가진 유저만 이 명령어를 사용할 수 있습니다',
-                            value='관리자에게 부탁해 보세요..?')
+            embed.add_field(name='오직 관리자 권한을 가진 유저만 이 명령어를 사용할 수 있습니다.',
+                            value='서버 관리자에게 부탁해보세요!')
             embed.set_footer(text='paka#8285')
             await interaction.edit_original_response(embed=embed)
             return
@@ -170,7 +170,7 @@ class register(commands.Cog):
             embed = discord.Embed(
                 title='에러...', description=' ', color=0xFF0000
             )
-            embed.add_field(name='이미 서버에서 진행중인 작업이 있습니다',
+            embed.add_field(name='이미 서버에서 진행중인 작업이 있습니다.',
                             value='작업이 끝날때까지 기다려주세요...')
             embed.set_footer(text='paka#8285')
             await interaction.edit_original_response(embed=embed)
@@ -182,8 +182,8 @@ class register(commands.Cog):
             embed = discord.Embed(
                 title='에러...', description=' ', color=0xFF0000
             )
-            embed.add_field(name='정보를 가져오는데 문제가 발생했습니다',
-                            value='정확한 이름을 입력해주세요...')
+            embed.add_field(name='데이터를 가져오는데 문제가 발생했습니다.',
+                            value='')
             embed.set_footer(text='paka#8285')
             await interaction.edit_original_response(embed=embed)
             return
