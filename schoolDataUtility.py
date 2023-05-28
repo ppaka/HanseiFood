@@ -29,7 +29,7 @@ def getSchoolData(guildId):
 def getSchoolInfo(nies_key, school_name):
     url = f'https://open.neis.go.kr/hub/schoolInfo?KEY={nies_key}&Type=json&SCHUL_NM={school_name}'
     try:
-        response = requests.get(url)
+        response = requests.get(url, verify=False)
         data = json.loads(response.text)
         if data['schoolInfo'][0]['head'][1]['RESULT']['CODE'] == 'INFO-000':
             return data

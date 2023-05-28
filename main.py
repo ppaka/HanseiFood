@@ -97,7 +97,16 @@ async def findFoodData(ctx: commands.context.Context, dayAddAmount, msg):
         return
 
     url = f'https://open.neis.go.kr/hub/mealServiceDietInfo?KEY={NEIS_KEY}&Type=json&ATPT_OFCDC_SC_CODE={schoolData[0]}&SD_SCHUL_CODE={schoolData[1]}&MLSV_YMD={ymd}'
-    response = requests.get(url)
+    try:
+        response = requests.get(url, verify=False)
+    except:
+        embed = discord.Embed(
+            title='오류 발생!', description='', color=0xFFA500)
+        embed.add_field(name=f'{date}일 급식 데이터를 조회하는 도중 오류가 발생했습니다.',
+                        value='GET 요청을 보내는 도중 심각한 문제가 발생한 것 같아요...', inline=False)
+        embed.set_footer(text='paka#8285')
+        await ctx.send(embed=embed)
+        return
     school_menu = json.loads(response.text)
 
     if school_menu.get('mealServiceDietInfo') == None:
