@@ -98,7 +98,7 @@ async def findFoodData(ctx: commands.context.Context, dayAddAmount, msg):
 
     url = f'https://open.neis.go.kr/hub/mealServiceDietInfo?KEY={NEIS_KEY}&Type=json&ATPT_OFCDC_SC_CODE={schoolData[0]}&SD_SCHUL_CODE={schoolData[1]}&MLSV_YMD={ymd}'
     try:
-        response = requests.get(url, verify=False)
+        response = requests.get(url)
     except:
         embed = discord.Embed(
             title='오류 발생!', description='', color=0xFFA500)
