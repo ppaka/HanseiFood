@@ -126,21 +126,22 @@ async def findFoodData(ctx: commands.context.Context, dayAddAmount, msg):
         await ctx.send(embed=embed)
     else:
         if isToday:
-            color=0xF2CB61
+            color = 0xF2CB61
         else:
             if dayAddAmount > 0:
-                color=0xFAEBD7
+                color = 0xFAEBD7
             else:
-                color=0xFFA7A7
-        
+                color = 0xFFA7A7
+
         embed = discord.Embed(
-                title='급식 정보', description=f'{msg} 급식이야!', color=color)
+            title='급식 정보', description=f'{msg} 급식이야!', color=color)
         embed.add_field(name='🍽', value=f'{data}', inline=False)
         embed.set_footer(text=f'{month}월 {date}일 / paka#8285')
         await ctx.send(embed=embed)
 
 
 bot = MyBot()
+
 
 @bot.command(name='어제급식', pass_context=True, aliases=['어급'])
 async def getInfoLastday(ctx: commands.context.Context):
