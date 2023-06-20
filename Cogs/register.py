@@ -48,7 +48,7 @@ class Confirm(discord.ui.View):
         )
         embed.add_field(name='서버의 학교 정보가 설정되었습니다!',
                         value='『오늘급식』 을 입력해보아요!')
-        embed.set_footer(text='paka#8285')
+        embed.set_footer(text='ppaka')
         await interaction.edit_original_response(embed=embed, view=None)
 
     @discord.ui.button(label='취소', style=discord.ButtonStyle.red)
@@ -63,8 +63,8 @@ class Confirm(discord.ui.View):
             title='작업 취소', description=' ', color=0xDC143C
         )
         embed.add_field(name='학교 설정 작업을 취소했습니다.',
-                        value='취소! 취소!')
-        embed.set_footer(text='paka#8285')
+                        value='')
+        embed.set_footer(text='ppaka')
         await interaction.edit_original_response(embed=embed, view=None)
 
 
@@ -103,7 +103,7 @@ class ConfirmNext(discord.ui.View):
         )
         embed.add_field(name='서버의 학교 정보가 설정되었습니다!',
                         value='『오늘급식』 을 입력해보아요!')
-        embed.set_footer(text='paka#8285')
+        embed.set_footer(text='ppaka')
         await interaction.edit_original_response(embed=embed, view=None)
 
     @discord.ui.button(label='취소', style=discord.ButtonStyle.red)
@@ -118,8 +118,8 @@ class ConfirmNext(discord.ui.View):
             title='작업 취소', description=' ', color=0xDC143C
         )
         embed.add_field(name='학교 설정 작업을 취소했습니다.',
-                        value='취소! 취소!')
-        embed.set_footer(text='paka#8285')
+                        value='')
+        embed.set_footer(text='ppaka')
         await interaction.edit_original_response(embed=embed, view=None)
 
     @discord.ui.button(label='다음', style=discord.ButtonStyle.secondary)
@@ -142,7 +142,7 @@ class ConfirmNext(discord.ui.View):
             name='시도교육청 이름', value=wating_data[interaction.guild_id][2][wating_data[interaction.guild_id][0]][1])
         embed.add_field(
             name='시도교육청 코드', value=wating_data[interaction.guild_id][2][wating_data[interaction.guild_id][0]][0])
-        embed.set_footer(text='반응을 눌러 결정해주세요  /  paka#8285')
+        embed.set_footer(text='반응을 눌러 결정해주세요  /  ppaka')
         await interaction.edit_original_response(embed=embed)
 
 
@@ -162,7 +162,7 @@ class register(commands.Cog):
             )
             embed.add_field(name='오직 관리자 권한을 가진 유저만 이 명령어를 사용할 수 있습니다.',
                             value='서버 관리자에게 부탁해보세요!')
-            embed.set_footer(text='paka#8285')
+            embed.set_footer(text='ppaka')
             await interaction.edit_original_response(embed=embed)
             return
 
@@ -172,7 +172,7 @@ class register(commands.Cog):
             )
             embed.add_field(name='이미 서버에서 진행중인 작업이 있습니다.',
                             value='작업이 끝날때까지 기다려주세요...')
-            embed.set_footer(text='paka#8285')
+            embed.set_footer(text='ppaka')
             await interaction.edit_original_response(embed=embed)
             return
 
@@ -184,7 +184,7 @@ class register(commands.Cog):
             )
             embed.add_field(name='데이터를 가져오는데 문제가 발생했습니다.',
                             value='')
-            embed.set_footer(text='paka#8285')
+            embed.set_footer(text='ppaka')
             await interaction.edit_original_response(embed=embed)
             return
 
@@ -211,7 +211,7 @@ class register(commands.Cog):
         embed.add_field(name='학교 코드', value=data[0][2])
         embed.add_field(name='시도교육청 이름', value=data[0][1])
         embed.add_field(name='시도교육청 코드', value=data[0][0])
-        embed.set_footer(text='버튼을 눌러 결정해주세요  /  paka#8285')
+        embed.set_footer(text='버튼을 눌러 결정해주세요  /  ppaka')
         wait_for_reaction[interaction.guild_id] = (
             interaction.user.id, interaction.guild_id, data)
 
@@ -237,8 +237,8 @@ class register(commands.Cog):
         cooltimes.pop(interaction.guild_id)
         wating_data.pop(interaction.guild_id)
         embed = discord.Embed(title='작업 취소', description=' ', color=0xB22222)
-        embed.add_field(name='타임아웃!', value='10초 안에 반응을 클릭해주세요')
-        embed.set_footer(text='paka#8285')
+        embed.add_field(name='타임아웃!', value='10초 안에 반응을 클릭해주세요...')
+        embed.set_footer(text='ppaka')
         await interaction.edit_original_response(embed=embed)
 
 

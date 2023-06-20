@@ -28,7 +28,7 @@ class getLunchData(commands.Cog):
             )
             embed.add_field(
                 name='사용하시기 전에...', value='『/급식학교설정』 명령어로 설정해주세요!')
-            embed.set_footer(text='paka#8285')
+            embed.set_footer(text='ppaka')
             await interaction.edit_original_response(embed=embed)
             return
 
@@ -41,17 +41,26 @@ class getLunchData(commands.Cog):
                 title='오류 발생!', description='', color=0xFFA500)
             embed.add_field(name=f'{ymd} 급식 데이터를 조회하는 도중 오류가 발생했습니다.',
                             value='GET 요청을 보내는 도중 심각한 문제가 발생한 것 같아요...', inline=False)
-            embed.set_footer(text='paka#8285')
+            embed.set_footer(text='ppaka')
             await interaction.edit_original_response(embed=embed)
             return
         school_menu = json.loads(response.text)
 
         if school_menu.get('mealServiceDietInfo') == None:
             embed = discord.Embed(
-                title='에러...', description='', color=0xFFA500)
+                title='오류 발생!', description='', color=0xFFA500)
             embed.add_field(name=f'{ymd} 급식 데이터를 조회하는 도중 오류가 발생했습니다.',
                             value='데이터를 불러오지 못했나봐요...', inline=False)
-            embed.set_footer(text='paka#8285')
+            embed.set_footer(text='ppaka')
+            await interaction.edit_original_response(embed=embed)
+            return
+        
+        if school_menu['mealServiceDietInfo'][0]['head'][1]['RESULT']['CODE'] != 'INFO-000':
+            embed = discord.Embed(
+                title='오류 발생!', description='', color=0xFFA500)
+            embed.add_field(name=f'{ymd} 급식 데이터를 조회하는 도중 오류가 발생했습니다.',
+                            value=f"하지만 오류코드({school_menu['mealServiceDietInfo'][1]['row'][0]['DDISH_NM']})는 남아있었다..!", inline=False)
+            embed.set_footer(text='ppaka')
             await interaction.edit_original_response(embed=embed)
             return
 
@@ -62,19 +71,20 @@ class getLunchData(commands.Cog):
             data = data + '\n' + i
 
         data = data.strip()
+        cal_info = school_menu['mealServiceDietInfo'][1]['row'][0]['CAL_INFO']
 
         if data == '':
             embed = discord.Embed(
                 title='에러...', description='', color=0xFFA500)
             embed.add_field(name=f'{ymd} 급식 데이터를 조회하지 못했습니다...',
                             value='어째서..?', inline=False)
-            embed.set_footer(text='paka#8285')
+            embed.set_footer(text='ppaka')
             await interaction.edit_original_response(embed=embed)
         else:
             embed = discord.Embed(
                 title='급식 정보', description=f'급식이야!', color=0xFAEBD7)
             embed.add_field(name='🍽', value=f'{data}', inline=False)
-            embed.set_footer(text=f'YMD:{ymd} / paka#8285')
+            embed.set_footer(text=f'{cal_info} / YMD:{ymd} / ppaka')
             await interaction.edit_original_response(embed=embed)
 
 
