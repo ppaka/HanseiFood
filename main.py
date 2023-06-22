@@ -117,7 +117,7 @@ async def findFoodData(ctx: commands.context.Context, dayAddAmount, msg):
         embed.set_footer(text=f'{date}일 / ppaka')
         await ctx.send(embed=embed)
         return
-    
+
     if school_menu['mealServiceDietInfo'][0]['head'][1]['RESULT']['CODE'] != 'INFO-000':
         embed = discord.Embed(
             title='오류 발생!', description='', color=0xFFA500)
@@ -127,7 +127,8 @@ async def findFoodData(ctx: commands.context.Context, dayAddAmount, msg):
         await ctx.send(embed=embed)
         return
 
-    splited_data = school_menu['mealServiceDietInfo'][1]['row'][0]['DDISH_NM'].split('<br/>')
+    splited_data = school_menu['mealServiceDietInfo'][1]['row'][0]['DDISH_NM'].split(
+        '<br/>')
     data = ''
     for i in splited_data:
         data = data + '\n' + i.strip()

@@ -12,4 +12,5 @@ if data.get('mealServiceDietInfo') == None:
 if data['mealServiceDietInfo'][0]['head'][1]['RESULT']['CODE'] == 'INFO-000':
     print(data['mealServiceDietInfo'][1]['row'][0]['DDISH_NM'])
 else:
-    print(data['mealServiceDietInfo'][0]['head'][1]['RESULT']['CODE'].split('<br/>'))
+    print(data['mealServiceDietInfo'][0]['head']
+          [1]['RESULT']['CODE'].split('<br/>'))

@@ -50,11 +50,11 @@ class getLunchData(commands.Cog):
             embed = discord.Embed(
                 title='오류 발생!', description='', color=0xFFA500)
             embed.add_field(name='오류코드',
-                        value=f"{school_menu['RESULT']['CODE']}", inline=False)
+                            value=f"{school_menu['RESULT']['CODE']}", inline=False)
             embed.set_footer(text=f'{ymd} / ppaka')
             await interaction.edit_original_response(embed=embed)
             return
-        
+
         if school_menu['mealServiceDietInfo'][0]['head'][1]['RESULT']['CODE'] != 'INFO-000':
             embed = discord.Embed(
                 title='오류 발생!', description='', color=0xFFA500)
