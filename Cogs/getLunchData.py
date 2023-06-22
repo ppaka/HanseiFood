@@ -49,9 +49,9 @@ class getLunchData(commands.Cog):
         if school_menu.get('mealServiceDietInfo') == None:
             embed = discord.Embed(
                 title='오류 발생!', description='', color=0xFFA500)
-            embed.add_field(name=f'{ymd} 급식 데이터를 조회하는 도중 오류가 발생했습니다.',
-                            value='데이터를 불러오지 못했나봐요...', inline=False)
-            embed.set_footer(text='ppaka')
+            embed.add_field(name='오류코드',
+                        value=f"{school_menu['RESULT']['CODE']}", inline=False)
+            embed.set_footer(text=f'{ymd} / ppaka')
             await interaction.edit_original_response(embed=embed)
             return
         
