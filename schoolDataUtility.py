@@ -1,6 +1,7 @@
 import requests
 import json
 import os
+from typing import Optional
 
 from getSavedSchoolJsonPath import getSavedSchoolJsonPath
 
@@ -26,7 +27,7 @@ def getSchoolData(guildId):
         return None
 
 
-def getSchoolInfo(neis_key: str, school_name: str) -> dict[str, str] | None:
+def getSchoolInfo(neis_key: str, school_name: str) -> Optional[dict[str, str]]:
     url = f"https://open.neis.go.kr/hub/schoolInfo?KEY={neis_key}&Type=json&SCHUL_NM={school_name}"
     try:
         response = requests.get(url)
