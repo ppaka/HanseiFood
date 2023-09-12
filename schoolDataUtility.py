@@ -5,8 +5,6 @@ from typing import Optional
 
 from getSavedSchoolJsonPath import getSavedSchoolJsonPath
 
-NEIS_KEY = os.environ["NEIS_KEY"]
-
 
 def getSchoolData(guildId):
     path = getSavedSchoolJsonPath()
@@ -27,7 +25,7 @@ def getSchoolData(guildId):
         return None
 
 
-def getSchoolInfo(neis_key: str, school_name: str) -> Optional[dict[str, str]]:
+def getSchoolInfo(neis_key: str, school_name: str):
     url = f"https://open.neis.go.kr/hub/schoolInfo?KEY={neis_key}&Type=json&SCHUL_NM={school_name}"
     try:
         response = requests.get(url)
