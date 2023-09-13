@@ -83,14 +83,14 @@ class getLunchData(commands.Cog):
         if data == "":
             embed = discord.Embed(title="에러...", description="", color=0xFFA500)
             embed.add_field(
-                name=f"{ymd} 급식 데이터를 조회하지 못했습니다...", value="어째서..?", inline=False
+                name=f"해당 날짜의 급식 데이터를 조회하지 못했습니다...", value="어째서..?", inline=False
             )
-            embed.set_footer(text="ppaka")
+            embed.set_footer(text=f"{ymd} / ppaka")
             await interaction.edit_original_response(embed=embed)
         else:
             embed = discord.Embed(title="급식 정보", description=f"급식이야!", color=0xFAEBD7)
             embed.add_field(name="🍽", value=f"{data}", inline=False)
-            embed.set_footer(text=f"{cal_info} / YMD:{ymd} / ppaka")
+            embed.set_footer(text=f"{cal_info} / {ymd} / ppaka")
             await interaction.edit_original_response(embed=embed)
 
 

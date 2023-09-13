@@ -90,7 +90,7 @@ async def findFoodData(ctx: commands.context.Context, dayAddAmount, msg):
             embed.add_field(
                 name=f"{date}일 급식 정보를 가져올 수 없습니다...", value=f"{dayString}요일에 급식이 나와..?"
             )
-        embed.set_footer(text="ppaka")
+        embed.set_footer(text=f"{ymd} / ppaka")
         await ctx.send(embed=embed)
         return
 
@@ -104,7 +104,7 @@ async def findFoodData(ctx: commands.context.Context, dayAddAmount, msg):
             value="GET 요청을 보내는 도중 심각한 문제가 발생한 것 같아요...",
             inline=False,
         )
-        embed.set_footer(text="ppaka")
+        embed.set_footer(text=f"{ymd} / ppaka")
         await ctx.send(embed=embed)
         return
     school_menu = json.loads(response.text)
@@ -124,7 +124,7 @@ async def findFoodData(ctx: commands.context.Context, dayAddAmount, msg):
                 value=f"4세대 지능형 나이스 오픈(2023.6.21.) 이후 변경된 운영 정책에 따라\n영양(교)사가 작성중인 식단 또는 [식단공개확정] 처리가 되지 않은 식단은\n조회되지 않을 수 있습니다.",
                 inline=False,
             )
-        embed.set_footer(text=f"{date}일 / ppaka")
+        embed.set_footer(text=f"{ymd} / ppaka")
         await ctx.send(embed=embed)
         return
 
@@ -135,7 +135,7 @@ async def findFoodData(ctx: commands.context.Context, dayAddAmount, msg):
             value=f"하지만 오류코드({school_menu['mealServiceDietInfo'][1]['row'][0]['DDISH_NM']})는 남아있었다..!",
             inline=False,
         )
-        embed.set_footer(text="ppaka")
+        embed.set_footer(text=f"{ymd} / ppaka")
         await ctx.send(embed=embed)
         return
 
@@ -154,7 +154,7 @@ async def findFoodData(ctx: commands.context.Context, dayAddAmount, msg):
         embed.add_field(
             name=f"{date}일 급식 데이터를 조회하지 못했습니다...", value="에? 분명 문제는 없었는데!", inline=False
         )
-        embed.set_footer(text="ppaka")
+        embed.set_footer(text=f"{ymd} / ppaka")
         await ctx.send(embed=embed)
     else:
         if isToday:
@@ -167,7 +167,7 @@ async def findFoodData(ctx: commands.context.Context, dayAddAmount, msg):
 
         embed = discord.Embed(title="급식 정보", description=f"{msg} 급식이야!", color=color)
         embed.add_field(name="🍽", value=f"{data}", inline=False)
-        embed.set_footer(text=f"{cal_info} / {month}월 {date}일 / ppaka")
+        embed.set_footer(text=f"{cal_info} / {ymd} / ppaka")
         await ctx.send(embed=embed)
 
 
