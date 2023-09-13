@@ -1,7 +1,5 @@
 import requests
 import json
-import os
-from typing import Optional
 
 from getSavedSchoolJsonPath import getSavedSchoolJsonPath
 
