@@ -10,6 +10,7 @@ from discord import Status
 import requests
 from schoolDataUtility import *
 
+#123
 NEIS_KEY = os.environ["NEIS_KEY"]
 APP_ID = "823346336190693407"
 DISCORD_TOKEN = os.environ["DISCORD_TOKEN"]
